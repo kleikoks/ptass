@@ -1,0 +1,37 @@
+main                      started
+ProcessPoolExecutor started
+handle_settlement_type    started
+handle_settlement_type    : 0.94s
+handle_warehouse_type     started
+handle_warehouse_type     : 1.01s
+handle_area               started
+handle_area               : 1.58s
+handle_settlement         started
+handle_settlement         : 12.13s
+handle_warehouse          started
+handle_warehouse          : 176.76s
+handle_address            started
+handle_address            : 188.08s
+main                      : 380.57s
+main                      started
+ThreadPoolExecutor started
+handle_settlement_type    started
+handle_settlement_type    : 0.3s
+handle_warehouse_type     started
+handle_warehouse_type     : 0.16s
+handle_area               started
+handle_area               : 0.43s
+handle_settlement         started
+handle_settlement         : 7.98s
+handle_warehouse          started
+handle_warehouse          : 167.67s
+handle_address            started
+handle_address            : 145.16s
+main                      : 321.81s
+async started
+handle_settlement_type    started
+handle_settlement_type    : 0.0s
+2022-07-03 14:33:31,485 async started
+2022-07-03 14:55:05,926 async started
+2022-07-03 14:55:12,531 async started
+2022-07-03 14:55:45,599 async started
