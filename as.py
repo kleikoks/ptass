@@ -5,7 +5,7 @@ from sqlalchemy import select
 from services.logg import get_logger
 from services.database import (
     a_get_response, a_get_full_response, engine,
-    handle_db, a_handle_execution
+    handle_db, a_handle_execution, a_time_decorator
 )
 from services.tables import (
     settlement_type, warehouse_type,
@@ -28,6 +28,7 @@ async def create_settlement_type(objects):
     await a_handle_execution(stmt)
 
 
+@a_time_decorator
 async def handle_settlement_type():
     response = await a_get_response('Address', 'getSettlementTypes')
     await create_settlement_type(response['data'])
@@ -45,6 +46,7 @@ async def create_warehouse_type(objects):
     await a_handle_execution(stmt)
 
 
+@a_time_decorator
 async def handle_warehouse_type():
     response = await a_get_response('Address', 'getWarehouseTypes')
     await create_warehouse_type(response['data'])
@@ -62,6 +64,7 @@ async def create_area(objects):
     await a_handle_execution(stmt)
 
 
+@a_time_decorator
 async def handle_area():
     response = await a_get_response('Address', 'getAreas')
     await create_area(response['data'])
@@ -81,6 +84,7 @@ async def create_settlement(objects):
     await a_handle_execution(stmt)
 
 
+@a_time_decorator
 async def handle_settlement():
     response = await a_get_full_response('Address', 'getCities')
     await create_settlement(response['data'])
@@ -119,6 +123,7 @@ async def create_warehouse(settlement_id):
         await a_handle_execution(stmt)
 
 
+@a_time_decorator
 async def handle_warehouse():
     settlement_ids = await get_settlement_ids()
     coros = [
@@ -146,6 +151,7 @@ async def create_address(settlement_id):
         await a_handle_execution(stmt)
 
 
+@a_time_decorator
 async def handle_address():
     settlement_ids = await get_settlement_ids()
     coros = [

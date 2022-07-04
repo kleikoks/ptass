@@ -33,5 +33,26 @@ handle_settlement_type    started
 handle_settlement_type    : 0.0s
 2022-07-03 14:33:31,485 async started
 2022-07-03 14:55:05,926 async started
-2022-07-03 14:55:12,531 async started
-2022-07-03 14:55:45,599 async started
+2022-07-04 16:25:15,635 async started
+2022-07-04 16:25:27,565 async started
+2022-07-04 16:25:27,565 handle_settlement_type    started
+2022-07-04 16:30:17,120 async started
+2022-07-04 16:30:17,120 handle_settlement_type    started
+2022-07-04 16:30:17,348 handle_settlement_type    : 0.23s
+2022-07-04 16:30:17,762 async started
+2022-07-04 16:31:29,594 async started
+2022-07-04 16:31:29,713 handle_settlement_type    started
+2022-07-04 16:31:29,898 handle_settlement_type    : 0.18s
+2022-07-04 16:31:29,898 handle_warehouse_type     started
+2022-07-04 16:31:30,087 handle_warehouse_type     : 0.19s
+2022-07-04 16:31:30,087 handle_area               started
+2022-07-04 16:31:30,283 handle_area               : 0.2s
+2022-07-04 16:31:30,283 handle_settlement         started
+2022-07-04 16:32:23,981 handle_settlement         : 53.7s
+2022-07-04 16:32:23,981 async started
+2022-07-04 16:40:53,452 handle_settlement         started
+2022-07-04 16:40:53,452 handle_settlement         : 0.01s
+2022-07-04 16:43:10,230 handle_settlement         started
+2022-07-04 16:43:10,230 handle_settlement         : 0.0s
+2022-07-04 16:43:29,794 handle_settlement         started
+2022-07-04 16:44:21,869 handle_settlement         : 52.07s

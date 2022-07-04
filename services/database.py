@@ -8,6 +8,7 @@ from sqlalchemy_utils import (
     database_exists, create_database
 )
 from decouple import config
+import functools
 
 from services.tables import meta
 from services.logg import logger
@@ -78,6 +79,16 @@ def time_decorator(func):
         loger.info(f'{func.__name__:<25} started')
         start = time.perf_counter()
         func()
+        end = time.perf_counter()
+        loger.info(f'{func.__name__:<25} : {round(end - start, 2)}s')
+    return wrapper
+
+
+def a_time_decorator(func):
+    async def wrapper():
+        loger.info(f'{func.__name__:<25} started')
+        start = time.perf_counter()
+        await func()
         end = time.perf_counter()
         loger.info(f'{func.__name__:<25} : {round(end - start, 2)}s')
     return wrapper
