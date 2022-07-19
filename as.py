@@ -3,9 +3,9 @@ import asyncio
 from sqlalchemy import select
 
 from services.logg import get_logger
-from services.database import (
-    a_get_response, a_get_full_response, engine,
-    handle_db, a_handle_execution, a_time_decorator
+from services.database_async import (
+    get_response, get_full_response, engine,
+    handle_db, handle_execution, time_decorator
 )
 from services.tables import (
     settlement_type, warehouse_type,
@@ -25,12 +25,12 @@ async def create_settlement_type(objects):
         } for obj in objects
         ]
     )
-    await a_handle_execution(stmt)
+    await handle_execution(stmt)
 
 
-@a_time_decorator
+@time_decorator
 async def handle_settlement_type():
-    response = await a_get_response('Address', 'getSettlementTypes')
+    response = await get_response('Address', 'getSettlementTypes')
     await create_settlement_type(response['data'])
 
 
@@ -43,12 +43,12 @@ async def create_warehouse_type(objects):
         } for obj in objects
         ]
     )
-    await a_handle_execution(stmt)
+    await handle_execution(stmt)
 
 
-@a_time_decorator
+@time_decorator
 async def handle_warehouse_type():
-    response = await a_get_response('Address', 'getWarehouseTypes')
+    response = await get_response('Address', 'getWarehouseTypes')
     await create_warehouse_type(response['data'])
 
 
@@ -61,12 +61,12 @@ async def create_area(objects):
         } for obj in objects
         ]
     )
-    await a_handle_execution(stmt)
+    await handle_execution(stmt)
 
 
-@a_time_decorator
+@time_decorator
 async def handle_area():
-    response = await a_get_response('Address', 'getAreas')
+    response = await get_response('Address', 'getAreas')
     await create_area(response['data'])
 
 
@@ -81,21 +81,21 @@ async def create_settlement(objects):
         } for obj in objects
         ]
     )
-    await a_handle_execution(stmt)
+    await handle_execution(stmt)
 
 
-@a_time_decorator
+@time_decorator
 async def handle_settlement():
-    response = await a_get_full_response('Address', 'getCities')
+    response = await get_full_response('Address', 'getCities')
     await create_settlement(response['data'])
 
 
 async def get_settlement_ids():
         stmt = select(settlement.c.ref)
         settlement_ids = []
-        with engine.connect() as connection:
+        async with engine.connect() as connection:
             try:
-                result = connection.execute(stmt)
+                result = await connection.execute(stmt)
                 settlement_ids = [obj[0] for obj in result]
             except Exception as e:
                 logger.info(e)
@@ -106,7 +106,7 @@ async def create_warehouse(settlement_id):
     properties = {
         'CityRef': settlement_id
     }
-    response = await a_get_response('Address', 'getWarehouses', properties)
+    response = await get_response('Address', 'getWarehouses', properties)
     data = response['data']
     if data:
         stmt = warehouse.insert().values(
@@ -120,10 +120,10 @@ async def create_warehouse(settlement_id):
             } for obj in data if data
             ]
         )
-        await a_handle_execution(stmt)
+        await handle_execution(stmt)
 
 
-@a_time_decorator
+@time_decorator
 async def handle_warehouse():
     settlement_ids = await get_settlement_ids()
     coros = [
@@ -136,7 +136,7 @@ async def create_address(settlement_id):
     properties = {
         'CityRef': settlement_id
     }
-    response = await a_get_response('Address', 'getStreet', properties)
+    response = await get_response('Address', 'getStreet', properties)
     data = response['data']
     if data:
         stmt = address.insert().values(
@@ -148,10 +148,10 @@ async def create_address(settlement_id):
             } for obj in data 
             ]
         )
-        await a_handle_execution(stmt)
+        await handle_execution(stmt)
 
 
-@a_time_decorator
+@time_decorator
 async def handle_address():
     settlement_ids = await get_settlement_ids()
     coros = [
@@ -162,13 +162,13 @@ async def handle_address():
 
 async def main():
     logger.info('async started')
-    handle_db()
-    await asyncio.gather(
-        handle_settlement_type(),
-        handle_warehouse_type(),
-        handle_area(),
-        handle_settlement()
-    )
+    await handle_db()
+    # await asyncio.gather(
+    #     handle_settlement_type(),
+    #     handle_warehouse_type(),
+    #     handle_area(),
+    #     handle_settlement()
+    # )
     # await asyncio.gather(
     #     handle_warehouse(),
     #     handle_address()
