@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
+from sqlalchemy import Table, Column, Integer, String, MetaData
 
 
 meta = MetaData()
@@ -27,16 +27,16 @@ settlement = Table(
     'settlement', meta,
     Column('ref', String, primary_key = True),
     Column('title', String),
-    Column('type', String, ForeignKey('settlement_type.ref')),
-    Column('area', String, ForeignKey('area.ref'))
+    Column('type', String),
+    Column('area', String)
 )
 
 warehouse = Table(
     'warehouse', meta,
     Column('ref', String, primary_key = True),
     Column('title', String),
-    Column('type', String, ForeignKey('warehouse_type.ref')),
-    Column('settlement', String, ForeignKey('settlement.ref')),
+    Column('type', String),
+    Column('settlement', String),
     Column('short_address', String)
 )
 
@@ -44,5 +44,5 @@ address = Table(
     'address', meta,
     Column('ref', String, primary_key = True),
     Column('title', String),
-    Column('settlement', String, ForeignKey('settlement.ref')),
+    Column('settlement', String),
 )

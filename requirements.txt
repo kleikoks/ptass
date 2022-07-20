@@ -3,3 +3,6 @@ python-decouple
 sqlalchemy
 requests
 sqlalchemy-utils
+psycopg2-binary
+asyncpg
+asyncpgsa

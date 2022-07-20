@@ -1,10 +1,11 @@
 import asyncio
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from services.logg import get_logger
 from services.database_async import (
-    get_response, get_full_response, engine,
+    get_response, get_full_response,
     handle_db, handle_execution, time_decorator
 )
 from services.tables import (
@@ -160,20 +161,21 @@ async def handle_address():
     await asyncio.gather(*coros)
 
 
+@time_decorator
 async def main():
     logger.info('async started')
-    await handle_db()
-    # await asyncio.gather(
-    #     handle_settlement_type(),
-    #     handle_warehouse_type(),
-    #     handle_area(),
-    #     handle_settlement()
-    # )
+    handle_db()
+    await asyncio.gather(
+        handle_settlement_type(),
+        handle_warehouse_type(),
+        handle_area(),
+        handle_settlement()
+    )
     # await asyncio.gather(
     #     handle_warehouse(),
     #     handle_address()
     # )
-    logger.info('async started')
+    logger.info('async ended')
 
 
 if __name__ == '__main__':

@@ -3,7 +3,9 @@ from services.logg import get_logger
 import requests
 import aiohttp
 import time
+import asyncpg
 
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy_utils import (
     database_exists, create_database
@@ -13,31 +15,30 @@ from decouple import config
 from services.tables import meta
 from services.logg import logger
 
-db_file = 'db.sqlite3'
 url = 'https://api.novaposhta.ua/v2.0/json/'
-engine = create_async_engine('sqlite:///db.sqlite3', echo=True, future=True)
+engine = create_async_engine('postgresql+asyncpg://kleikoks:kleikoks@localhost:5432/test', echo=True, future=True)
 api_key = config('NP_API_KEY', None)
 loger = get_logger()
 
-async def handle_db():
-    if not database_exists(engine.url):
-        create_database(engine.url)
-    # ? meta.drop_all(engine) неробоче гівно
-        meta.create_all(engine)
+
+def handle_db():
+    engine = create_engine('postgresql://kleikoks:kleikoks@localhost:5432/test', echo=True, future=True)
+    meta.drop_all(engine)
+    meta.create_all(engine)
 
 
 async def handle_execution(stmt):
-    with engine.begin() as connection:
+    async with engine.begin() as connection:
         try:
-            connection.execute(stmt)
+            await connection.execute(stmt)
         except Exception as e:
             logger.info(e)
 
 
-def get_full_response(model:str, method: str, properties:dict = None):
+async def get_full_response(model:str, method: str, properties:dict = None):
     result = {'data': []}
     if not properties:
-        properties = {}
+        properties = {"Limit": 100000}
     data = {
         "apiKey": api_key,
         "modelName": model,
@@ -46,12 +47,14 @@ def get_full_response(model:str, method: str, properties:dict = None):
     }
     data['methodProperties']['Page'] = 1
     while True:
-        response = requests.post(url, json=data).json()
-        for obj in response['data']:
-            result['data'].append(obj)
-        if not response['data']:
-            break
-        data['methodProperties']['Page'] += 1
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=data) as response:
+                response = await response.json()
+                for obj in response['data']:
+                    result['data'].append(obj)
+                if not response['data']:
+                    break
+                data['methodProperties']['Page'] += 1
     return result
 
 
@@ -62,8 +65,9 @@ async def get_response(model:str, method:str, properties:dict = {}, url:str = ur
         "calledMethod": method,
         'methodProperties': properties
     }
-    response = requests.post(url, json=data).json()
-    return response
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, json=data) as response:
+            return await response.json()
 
 
 def time_decorator(func):
