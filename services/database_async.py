@@ -1,15 +1,11 @@
 
 from services.logg import get_logger
-import requests
 import aiohttp
 import time
 import asyncpg
 
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy_utils import (
-    database_exists, create_database
-)
 from decouple import config
 
 from services.tables import meta

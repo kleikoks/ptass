@@ -1,7 +1,7 @@
 import asyncio
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import create_async_engine
+from asyncpgsa import pg
 
 from services.logg import get_logger
 from services.database_async import (
@@ -85,21 +85,17 @@ async def create_settlement(objects):
     await handle_execution(stmt)
 
 
+
 @time_decorator
 async def handle_settlement():
+    loop = asyncio.get_running_loop()
     response = await get_full_response('Address', 'getCities')
     await create_settlement(response['data'])
 
 
 async def get_settlement_ids():
         stmt = select(settlement.c.ref)
-        settlement_ids = []
-        async with engine.connect() as connection:
-            try:
-                result = await connection.execute(stmt)
-                settlement_ids = [obj[0] for obj in result]
-            except Exception as e:
-                logger.info(e)
+        settlement_ids = await pg.fetch(stmt)
         return settlement_ids
 
 
@@ -166,16 +162,15 @@ async def main():
     logger.info('async started')
     handle_db()
     await asyncio.gather(
+        handle_settlement(),
         handle_settlement_type(),
         handle_warehouse_type(),
-        handle_area(),
-        handle_settlement()
+        handle_area()
     )
-    # await asyncio.gather(
-    #     handle_warehouse(),
-    #     handle_address()
-    # )
-    logger.info('async ended')
+    await asyncio.gather(
+        handle_warehouse(),
+        handle_address()
+    )
 
 
 if __name__ == '__main__':

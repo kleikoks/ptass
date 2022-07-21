@@ -1,5 +1,3 @@
-import numpy
-from concurrent.futures import ProcessPoolExecutor
 from sqlalchemy import select
 
 from services.logg import get_logger
@@ -11,7 +9,6 @@ from services.tables import (
     settlement_type, warehouse_type, area, settlement, warehouse, address
 )
 
-step = 100
 logger = get_logger()
 
 
@@ -31,15 +28,7 @@ def create_settlement_type(objects):
 @time_decorator
 def handle_settlement_type():
     response = get_response('Address', 'getSettlementTypes')
-    objects = numpy.array_split(response['data'], step)
-    data = [x for x in objects if x.any()]
-    with ProcessPoolExecutor() as executor:
-        [
-            executor.submit(
-                create_settlement_type,
-                objects 
-            ) for objects in data
-        ]
+    create_settlement_type(response['data'])
 
 
 def create_warehouse_type(objects):
@@ -57,15 +46,7 @@ def create_warehouse_type(objects):
 @time_decorator
 def handle_warehouse_type():
     response = get_response('Address', 'getWarehouseTypes')
-    objects = numpy.array_split(response['data'], step)
-    data = [x for x in objects if x.any()]
-    with ProcessPoolExecutor() as executor:
-        [
-            executor.submit(
-                create_warehouse_type,
-                objects 
-            ) for objects in data
-        ]
+    create_warehouse_type(response['data'])
 
 
 def create_area(objects):
@@ -83,15 +64,7 @@ def create_area(objects):
 @time_decorator
 def handle_area():
     response = get_response('Address', 'getAreas')
-    objects = numpy.array_split(response['data'], step)
-    data = [x for x in objects if x.any()]
-    with ProcessPoolExecutor() as executor:
-        [
-            executor.submit(
-                create_area,
-                objects 
-            ) for objects in data
-        ]
+    create_area(response['data'])
 
 
 def create_settlement(objects):
@@ -111,15 +84,7 @@ def create_settlement(objects):
 @time_decorator
 def handle_settlement():
     response = get_full_response('Address', 'getCities')
-    objects = numpy.array_split(response['data'], step)
-    data = [x for x in objects if x.any()]
-    with ProcessPoolExecutor() as executor:
-        [
-            executor.submit(
-                create_settlement,
-                objects 
-            ) for objects in data
-        ]
+    create_settlement(response['data'])
 
 
 def get_settlement_ids():
@@ -157,13 +122,9 @@ def create_warehouse(settlement_id):
 @time_decorator
 def handle_warehouse():
     settlement_ids = get_settlement_ids()
-    with ProcessPoolExecutor() as executor:
-        [
-            executor.submit(
-                create_warehouse,
-                settlement_id 
-            ) for settlement_id in settlement_ids
-        ]
+    [
+        create_warehouse(settlement_id) for settlement_id in settlement_ids
+    ]
 
 
 def create_address(settlement_id):
@@ -187,18 +148,14 @@ def create_address(settlement_id):
 @time_decorator
 def handle_address():
     settlement_ids = get_settlement_ids()
-    with ProcessPoolExecutor() as executor:
-        [
-            executor.submit(
-                create_address,
-                settlement_id 
-            ) for settlement_id in settlement_ids
-        ]
+    [
+        create_address(settlement_id) for settlement_id in settlement_ids
+    ]   
 
 
 @time_decorator
 def main():
-    get_logger().info('ProcessPoolExecutor started')
+    get_logger().info('ThreadPoolExecutor started')
     handle_db()
     handle_settlement_type()
     handle_warehouse_type()

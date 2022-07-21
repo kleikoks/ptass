@@ -1,14 +1,18 @@
+import numpy
 from concurrent.futures import ThreadPoolExecutor
 from sqlalchemy import select
 
-from services.logg import get_loger
+from services.logg import get_logger
 from services.database import (
     get_response, get_full_response, time_decorator, 
-    handle_execution, handle_db
+    handle_execution, handle_db, engine
 )
 from services.tables import (
     settlement_type, warehouse_type, area, settlement, warehouse, address
 )
+
+logger = get_logger()
+step = 100
 
 
 def create_settlement_type(objects):
@@ -27,7 +31,8 @@ def create_settlement_type(objects):
 @time_decorator
 def handle_settlement_type():
     response = get_response('Address', 'getSettlementTypes')
-    data = response['data']
+    objects = numpy.array_split(response['data'], step)
+    data = [x for x in objects if x.any()]
     with ThreadPoolExecutor() as executor:
         [
             executor.submit(
@@ -52,7 +57,8 @@ def create_warehouse_type(objects):
 @time_decorator
 def handle_warehouse_type():
     response = get_response('Address', 'getWarehouseTypes')
-    data = response['data']
+    objects = numpy.array_split(response['data'], step)
+    data = [x for x in objects if x.any()]
     with ThreadPoolExecutor() as executor:
         [
             executor.submit(
@@ -77,7 +83,8 @@ def create_area(objects):
 @time_decorator
 def handle_area():
     response = get_response('Address', 'getAreas')
-    data = response['data']
+    objects = numpy.array_split(response['data'], step)
+    data = [x for x in objects if x.any()]
     with ThreadPoolExecutor() as executor:
         [
             executor.submit(
@@ -104,7 +111,8 @@ def create_settlement(objects):
 @time_decorator
 def handle_settlement():
     response = get_full_response('Address', 'getCities')
-    data = response['data']
+    objects = numpy.array_split(response['data'], step)
+    data = [x for x in objects if x.any()]
     with ThreadPoolExecutor() as executor:
         [
             executor.submit(
@@ -115,8 +123,15 @@ def handle_settlement():
 
 
 def get_settlement_ids():
-    stmt = select(settlement.c.ref)
-    return [s[0] for s in handle_execution(stmt)]
+        stmt = select(settlement.c.ref)
+        settlement_ids = []
+        with engine.connect() as connection:
+            try:
+                result = connection.execute(stmt)
+                settlement_ids = [obj[0] for obj in result]
+            except Exception as e:
+                logger.info(e)
+        return settlement_ids
 
 
 def create_warehouse(settlement_id):
@@ -183,7 +198,7 @@ def handle_address():
 
 @time_decorator
 def main():
-    get_loger().info('ThreadPoolExecutor started')
+    get_logger().info('ThreadPoolExecutor started')
     handle_db()
     handle_settlement_type()
     handle_warehouse_type()
