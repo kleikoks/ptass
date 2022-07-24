@@ -1,5 +1,4 @@
 
-from services.logg import get_logger
 import requests
 import time
 
@@ -11,13 +10,13 @@ from decouple import config
 
 
 from services.tables import meta
-from services.logg import logger
+from services.logg import get_logger
 
 db_file = 'db.sqlite3'
 url = 'https://api.novaposhta.ua/v2.0/json/'
 engine = create_engine('sqlite:///db.sqlite3', echo=True, future=True)
 api_key = config('NP_API_KEY', None)
-loger = get_logger()
+logger = get_logger()
 
 def handle_db():
     if not database_exists(engine.url):
@@ -68,9 +67,9 @@ def get_response(model:str, method: str, properties:dict = {}, url: str = url):
 
 def time_decorator(func):
     def wrapper():
-        loger.info(f'{func.__name__:<25} started')
+        logger.info(f'{func.__name__:<25} started')
         start = time.perf_counter()
         func()
         end = time.perf_counter()
-        loger.info(f'{func.__name__:<25} : {round(end - start, 2)}s')
+        logger.info(f'{func.__name__:<25} : {round(end - start, 2)}s')
     return wrapper

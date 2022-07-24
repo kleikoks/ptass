@@ -27,3 +27,47 @@
 2022-07-21 21:48:11,302 handle_address            started
 2022-07-21 21:51:20,920 handle_address            : 189.62s
 2022-07-21 21:51:20,920 main                      : 385.53s
+2022-07-22 14:31:27,423 main                      started
+2022-07-24 09:44:41,843 main                      started
+2022-07-24 09:44:41,843 async started
+2022-07-24 09:44:42,066 handle_settlement         started
+2022-07-24 09:44:42,080 handle_settlement_type    started
+2022-07-24 09:44:42,081 handle_warehouse_type     started
+2022-07-24 09:44:42,081 handle_area               started
+2022-07-24 09:44:42,393 handle_settlement_type    : 0.31s
+2022-07-24 09:44:42,393 handle_warehouse_type     : 0.31s
+2022-07-24 09:44:42,400 handle_area               : 0.32s
+2022-07-24 09:45:08,056 handle_settlement         : 25.99s
+2022-07-24 09:45:08,056 handle_warehouse          started
+2022-07-24 09:45:08,058 handle_address            started
+2022-07-24 09:46:11,727 main                      started
+2022-07-24 09:46:11,727 async started
+2022-07-24 09:46:11,852 handle_settlement         started
+2022-07-24 09:46:11,867 handle_settlement_type    started
+2022-07-24 09:46:11,867 handle_warehouse_type     started
+2022-07-24 09:46:11,867 handle_area               started
+2022-07-24 09:46:12,117 handle_settlement_type    : 0.26s
+2022-07-24 09:46:12,227 handle_warehouse_type     : 0.37s
+2022-07-24 09:46:12,227 handle_area               : 0.37s
+2022-07-24 09:46:47,297 handle_settlement         : 35.44s
+2022-07-24 09:46:47,298 handle_warehouse          started
+2022-07-24 09:46:47,300 handle_address            started
+2022-07-24 09:47:46,784 main                      started
+2022-07-24 09:47:46,784 async started
+2022-07-24 09:47:46,908 handle_settlement         started
+2022-07-24 09:47:46,924 handle_settlement_type    started
+2022-07-24 09:47:46,924 handle_warehouse_type     started
+2022-07-24 09:47:46,924 handle_area               started
+2022-07-24 09:47:47,158 handle_warehouse_type     : 0.23s
+2022-07-24 09:47:47,158 handle_settlement_type    : 0.23s
+2022-07-24 09:47:47,221 handle_area               : 0.3s
+2022-07-24 09:48:21,072 handle_settlement         : 34.16s
+2022-07-24 09:48:21,073 handle_warehouse          started
+2022-07-24 09:51:55,115 main                      started
+2022-07-24 09:51:55,115 handle_warehouse          started
+2022-07-24 09:53:00,770 main                      started
+2022-07-24 09:53:00,770 handle_warehouse          started
+2022-07-24 09:54:52,666 main                      started
+2022-07-24 09:54:52,666 handle_warehouse          started
+2022-07-24 09:56:59,714 main                      started
+2022-07-24 09:56:59,714 handle_warehouse          started

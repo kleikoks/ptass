@@ -1,11 +1,10 @@
 import asyncio
 
 from sqlalchemy import select
-from asyncpgsa import pg
 
 from services.logg import get_logger
 from services.database_async import (
-    get_response, get_full_response,
+    get_response, get_full_response, engine,
     handle_db, handle_execution, time_decorator
 )
 from services.tables import (
@@ -85,7 +84,6 @@ async def create_settlement(objects):
     await handle_execution(stmt)
 
 
-
 @time_decorator
 async def handle_settlement():
     loop = asyncio.get_running_loop()
@@ -95,7 +93,13 @@ async def handle_settlement():
 
 async def get_settlement_ids():
         stmt = select(settlement.c.ref)
-        settlement_ids = await pg.fetch(stmt)
+        settlement_ids = []
+        async with engine.connect() as connection:
+            try:
+                result = await connection.execute(stmt)
+                [settlement_ids.append(obj[0]) for obj in result]
+            except Exception as e:
+                logger.info(e)
         return settlement_ids
 
 
@@ -104,7 +108,7 @@ async def create_warehouse(settlement_id):
         'CityRef': settlement_id
     }
     response = await get_response('Address', 'getWarehouses', properties)
-    data = response['data']
+    data = response['data'] if response else None
     if data:
         stmt = warehouse.insert().values(
             [
@@ -123,6 +127,7 @@ async def create_warehouse(settlement_id):
 @time_decorator
 async def handle_warehouse():
     settlement_ids = await get_settlement_ids()
+    settlement_ids = settlement_ids[:]
     coros = [
         create_warehouse(id) for id in settlement_ids
     ]
@@ -134,7 +139,7 @@ async def create_address(settlement_id):
         'CityRef': settlement_id
     }
     response = await get_response('Address', 'getStreet', properties)
-    data = response['data']
+    data = response['data'] if response else None
     if data:
         stmt = address.insert().values(
             [
@@ -151,6 +156,7 @@ async def create_address(settlement_id):
 @time_decorator
 async def handle_address():
     settlement_ids = await get_settlement_ids()
+    print('got ids', settlement_ids[0])
     coros = [
         create_address(id) for id in settlement_ids
     ]
@@ -167,10 +173,8 @@ async def main():
         handle_warehouse_type(),
         handle_area()
     )
-    await asyncio.gather(
-        handle_warehouse(),
-        handle_address()
-    )
+    await handle_warehouse()
+    await handle_address()
 
 
 if __name__ == '__main__':

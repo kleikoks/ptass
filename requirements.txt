@@ -5,5 +5,4 @@ requests
 sqlalchemy-utils
 psycopg2-binary
 asyncpg
-asyncpgsa
 numpy
